@@ -10,6 +10,8 @@ failed = []
 with_changes = []
 update_branch = 'develop'
 current = False
+stay_develop = False
+was_not_in_develop = []
 
 
 def _sh(string):
@@ -46,6 +48,9 @@ if '--update-branch' in sys.argv:
 if '--current' in sys.argv:
     current = True
 
+if '--stay-develop' in sys.argv:
+    stay_develop = True
+
 
 def update(path):
     try:
@@ -59,8 +64,12 @@ def update(path):
 
         call(_sh(f'git -C {path} pull'))
 
-        if not current and current_branch != update_branch:
+        if not current and not stay_develop and current_branch != update_branch:
             call(_sh(f'git -C {path} checkout {current_branch}'))
+        if stay_develop and current_branch != update_branch:
+            print(f'previous branch: {current_branch}')
+            was_not_in_develop.append(path)
+
         if has_stash:
             with_changes.append(path)
             call(_sh(f'git -C {path} stash pop'))
@@ -76,7 +85,13 @@ if len(failed) > 0:
     print('xxxxxxxxxxxxxxxxxxxxxxxxx')
     print('FAILED TO UPDATE DEVELOP:')
     print(failed)
+
 if len(with_changes) > 0:
     print('===================')
     print('Repos with changes:')
     print(with_changes)
+
+if len(was_not_in_develop) > 0 and stay_develop:
+    print('===================')
+    print('Repos that was in another branches:')
+    print(was_not_in_develop)
