@@ -21,7 +21,7 @@ if '--help' in sys.argv:
     print('--all-folders         run the script on all folders in current directory')
     print('--ignore              folders to ignore when running the script')
     print('--only                use only specified folders')
-    print('--update-branch       name of the name to update. Default: develop')
+    print('--update-branch       name of the branch to update. Default: develop')
     print('--current             update only current branch. The script will not change to develop (or specified)')
     exit(0)
 
